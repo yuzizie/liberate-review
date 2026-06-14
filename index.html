@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<!--
+  膝痛専門整体院 Liberate ｜ 口コミ収集ツール（白基調×ティール）
+  - 選択肢タップ → ブラウザ内テンプレ生成（API・サーバー不要）→ コピー → Google／HPBへ
+  - 単一HTML / GitHub Pages で運用できます
+  - 投稿先URLは下の GOOGLE_REVIEW_URL / HOTPEPPER_REVIEW_URL（JS内）に設定済み
+  © Liberate @hizatu_yuzi  無断転載・複製を禁じます
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<title>口コミのご協力｜膝痛専門整体院 Liberate</title>
+<meta name="author" content="Liberate / 井上">
+<meta name="copyright" content="© Liberate @hizatu_yuzi">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --text:#16242F;       /* 濃いめの黒に近い色（読みやすさ重視） */
+    --sub:#566873;
+    --accent:#138F82;     /* 清潔感のあるティール */
+    --accentDark:#0F7468;
+    --line:#E2E8EB;
+    --chipbg:#F4F8F8;
+    --selbg:#E3F3F0;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif;
+    font-weight:600; line-height:1.85; font-size:17px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:24px 18px 56px;}
+
+  /* ヘッダー */
+  .head{text-align:center; padding:14px 0 12px;}
+  .emblem{
+    width:54px; height:54px; margin:0 auto 10px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:28px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(19,143,130,.28);
+  }
+  .brand{font-size:15px; font-weight:700; letter-spacing:.04em; color:var(--accentDark);}
+  .title{font-size:27px; font-weight:800; margin:8px 0 6px; line-height:1.45;}
+  .sub{font-size:15px; font-weight:600; color:var(--sub); line-height:1.8;}
+
+  /* 進捗 */
+  .progress{display:flex; gap:7px; justify-content:center; margin:18px 0 6px;}
+  .dot{width:10px; height:10px; border-radius:50%; background:var(--line);}
+  .dot.on{background:var(--accent);}
+  .step-label{text-align:center; font-size:14px; font-weight:700; color:var(--accentDark); margin-bottom:14px;}
+
+  /* カード */
+  .card{
+    background:#fff; border-radius:18px; padding:24px 18px;
+    border:1px solid var(--line); box-shadow:0 6px 22px rgba(20,40,55,.06);
+  }
+  .q-title{font-size:23px; font-weight:800; line-height:1.5; margin:0 0 12px;}
+
+  /* 複数回答OKバッジ（目立たせる） */
+  .multi-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--accent); color:#fff; font-size:16px; font-weight:800;
+    padding:9px 16px; border-radius:999px; margin:0 0 16px;
+    box-shadow:0 3px 10px rgba(19,143,130,.28);
+  }
+  .multi-badge .b-check{
+    width:22px; height:22px; border-radius:50%; background:#fff; color:var(--accent);
+    display:inline-flex; align-items:center; justify-content:center; font-size:15px; font-weight:900;
+  }
+  .q-note{font-size:14px; font-weight:600; color:var(--sub); margin:0 0 16px;}
+
+  /* 選択肢 */
+  .opts{display:flex; flex-direction:column; gap:11px;}
+  .opt{
+    display:flex; align-items:center; gap:13px;
+    background:var(--chipbg); border:2px solid var(--line);
+    border-radius:13px; padding:15px 16px; cursor:pointer;
+    font-size:17px; font-weight:700; color:var(--text); transition:.15s; text-align:left;
+  }
+  .opt .check{
+    flex:0 0 auto; width:26px; height:26px; border-radius:8px;
+    border:2px solid #B9C6CC; background:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff;
+  }
+  .opt.sel{ background:var(--selbg); border-color:var(--accent); color:var(--accentDark); }
+  .opt.sel .check{background:var(--accent); border-color:var(--accent);}
+
+  /* テキスト入力 */
+  textarea{
+    width:100%; min-height:130px; resize:vertical;
+    border:2px solid var(--line); border-radius:13px; padding:15px;
+    font-family:inherit; font-size:18px; font-weight:600; line-height:1.8; color:var(--text); background:var(--chipbg);
+  }
+  textarea:focus{outline:none; border-color:var(--accent);}
+  .mic{
+    margin-top:12px; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+    border:2px solid var(--accent); background:#fff; color:var(--accentDark);
+    border-radius:13px; padding:14px; font-size:17px; font-weight:800; cursor:pointer;
+  }
+  .mic.rec{background:#FDE9E5; border-color:#C0563F; color:#A8402C;}
+  .mic-hint{font-size:17px; font-weight:800; color:var(--accentDark); text-align:center; margin-top:12px; background:var(--selbg); border:1.5px solid var(--accent); border-radius:12px; padding:13px 12px; line-height:1.7;}
+  .mic-hint .mh-ico{font-size:22px; display:block; margin-bottom:2px;}
+
+  /* ボタン */
+  .nav{display:flex; gap:12px; margin-top:22px;}
+  .btn{flex:1; border:none; border-radius:13px; padding:17px; font-size:18px; font-weight:800; cursor:pointer; font-family:inherit;}
+  .btn.primary{background:var(--accent); color:#fff;}
+  .btn.primary:disabled{background:#BBD3CF; cursor:not-allowed;}
+  .btn.ghost{background:#fff; color:var(--accentDark); border:2px solid var(--line); flex:0 0 38%;}
+
+  /* 結果 */
+  .result-box{background:#fff; border:1px solid var(--line); border-radius:18px; padding:24px 18px; box-shadow:0 6px 22px rgba(20,40,55,.06);}
+  .result-lead{font-size:16px; font-weight:600; color:var(--sub); margin:0 0 14px; line-height:1.8;}
+  .result-text{font-size:19px; font-weight:600; line-height:2.0; white-space:pre-wrap; background:var(--chipbg); border-radius:13px; padding:18px; color:var(--text);}
+  .regen{margin-top:14px; width:100%; background:#fff; color:var(--accentDark); border:2px solid var(--line); border-radius:13px; padding:14px; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit;}
+  .copy{margin-top:14px; width:100%; background:var(--accentDark); color:#fff; border:none; border-radius:13px; padding:17px; font-size:19px; font-weight:800; cursor:pointer; font-family:inherit;}
+  .copy.done{background:#1B9E72;}
+  .goto{margin-top:12px; width:100%; border-radius:13px; padding:16px; font-size:18px; font-weight:800; cursor:pointer; font-family:inherit; display:block; text-align:center; text-decoration:none;}
+  .goto.main{background:var(--accent); color:#fff; border:none; font-size:19px; padding:18px;}
+  .goto.hp{background:#D2752E;}
+  .goto-note{font-size:14px; font-weight:700; color:var(--sub); text-align:center; margin-top:12px;}
+  .steps-after{font-size:15px; font-weight:600; color:var(--sub); margin:18px 4px 0; line-height:1.95;}
+  .steps-after b{color:var(--accentDark);}
+
+  .foot{text-align:center; font-size:12px; font-weight:600; color:var(--sub); margin-top:34px; line-height:1.8;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="emblem">✓</div>
+    <div class="brand">膝痛専門整体院 Liberate</div>
+    <div class="title" id="appTitle">口コミのご協力<br>ありがとうございます</div>
+    <div class="sub" id="appSub">いくつかタップで選んでいただくだけで<br>かんたんに文章をご用意します</div>
+  </div>
+  <div id="questionArea"></div>
+  <div id="resultArea" class="hidden"></div>
+  <div class="foot">© Liberate @hizatu_yuzi｜投稿前にご自由に書き換えていただけます</div>
+</div>
+<script>
+/* ===========================================================
+   ★投稿先URL（設定済み）★
+   ① Google：g.page/r/... の「クチコミを書く」URL
+   ② ホットペッパー：自院クチコミページのURL
+=========================================================== */
+const GOOGLE_REVIEW_URL    = "https://g.page/r/Cc8KV9iWUiniEAI/review";
+const HOTPEPPER_REVIEW_URL = "https://beauty.hotpepper.jp/kr/slnH000718879/review/";
+
+/* ===========================================================
+   質問データ（t=表示ラベル / n=文章用フレーズ / c=連用形 / f=言い切り）
+=========================================================== */
+const QUESTIONS = [
+  {key:"q1", title:"膝のどこが痛みましたか？", note:"あてはまるものを全部えらんでください",
+   opts:[{t:"膝の前側",n:"膝の前側"},{t:"膝の内側",n:"膝の内側"},{t:"膝の外側",n:"膝の外側"},{t:"膝の後ろ",n:"膝の裏側"},{t:"膝の奥",n:"膝の奥"},{t:"お皿の下",n:"お皿の下あたり"},{t:"膝全体・はっきりしない",n:"膝全体"}]},
+  {key:"q2", title:"どんなときに痛みましたか？", note:"あてはまるお悩みを全部えらんでください",
+   opts:[{t:"歩くと痛い",n:"歩くときの痛み"},{t:"階段の上り下りがつらい",n:"階段の上り下りのつらさ"},{t:"立ち上がるときに痛い",n:"立ち上がるときの痛み"},{t:"動き始めに痛い",n:"動き始めの痛み"},{t:"ずっと立っていると痛い",n:"長く立っているときの痛み"},{t:"正座ができない",n:"正座ができないこと"},{t:"膝の曲げ伸ばしで痛む",n:"膝の曲げ伸ばしの痛み"},{t:"膝に水がたまる・腫れる",n:"膝の腫れや水たまり"},{t:"O脚が気になる",n:"O脚"},{t:"変形性膝関節症と診断された",n:"変形性膝関節症の診断"},{t:"病院で「年のせい」と言われた",n:"「年のせい」と言われたこと"},{t:"他の病院・治療院でよくならなかった",n:"他ではなかなか変わらなかったこと"},{t:"手術を勧められている・避けたい",n:"手術を勧められていたこと"},{t:"その他",n:"膝の不調"}]},
+  {key:"qp", title:"これまで、その痛みにどう対処してきましたか？", note:"あてはまるものを全部えらんでください",
+   opts:[{t:"電気をあてていた",n:"電気をあてたり"},{t:"湿布をしていた",n:"湿布を貼ったり"},{t:"痛み止めを飲んでいた",n:"痛み止めを飲んだり"},{t:"注射を打っていた",n:"注射を打ったり"},{t:"ヒアルロン酸注射を打っていた",n:"ヒアルロン酸注射を打ったり"},{t:"サポーターをつけていた",n:"サポーターをつけたり"},{t:"整形外科に通っていた",n:"整形外科に通ったり"},{t:"整骨院・マッサージに通っていた",n:"整骨院やマッサージに通ったり"},{t:"我慢して様子を見ていた",n:"様子を見たり"},{t:"どうしていいか分からず悩んでいた",n:"どうしていいか分からず悩んだり"},{t:"その他",n:"いろいろ試したり"}]},
+  {key:"q3", title:"どんな施術・サポートを受けましたか？", note:"受けたものを全部えらんでください",
+   opts:[{t:"膝の専門施術（手技）",n:"膝の専門的な施術"},{t:"膝を伸ばすための施術",n:"膝を伸ばすための施術"},{t:"膝のねじれ・バランスの調整",n:"膝のねじれやバランスの調整"},{t:"お皿まわりの施術",n:"お皿まわりの施術"},{t:"膝を強くするトレーニング",n:"膝を強くするためのトレーニング"},{t:"痛みの原因の検査・説明",n:"痛みの原因の検査と説明"},{t:"自分でできるセルフケアの指導",n:"自分でできるセルフケアの指導"},{t:"歩き方・体の使い方のアドバイス",n:"歩き方や体の使い方のアドバイス"},{t:"食事・栄養のアドバイス",n:"食事や栄養のアドバイス"},{t:"体質を整える腸活の指導",n:"体質を整える腸活の指導"},{t:"その他",n:"丁寧な施術"}]},
+  {key:"q4", title:"体にどんな変化がありましたか？", note:"感じた変化を全部えらんでください",
+   opts:[{t:"痛みがやわらいだ",c:"痛みがやわらぎ",f:"痛みがやわらいできました"},{t:"歩くのがラクになった",c:"歩くのがラクになり",f:"歩くのがラクになってきました"},{t:"階段がラクになった",c:"階段がラクになり",f:"階段の上り下りがラクになってきました"},{t:"立ち上がりがラクになった",c:"立ち上がりがラクになり",f:"立ち上がりがラクになってきました"},{t:"膝の曲げ伸ばしがしやすくなった",c:"膝の曲げ伸ばしがしやすくなり",f:"膝の曲げ伸ばしがしやすくなってきました"},{t:"正座に近づいた・できるようになった",c:"正座に近づき",f:"正座に近づいてきました"},{t:"腫れ・水がひいてきた",c:"腫れや水がひき",f:"腫れや水がひいてきました"},{t:"外出や旅行ができるようになった",c:"外出ができるようになり",f:"外出や旅行を楽しめるようになりました"},{t:"スポーツ・趣味を楽しめるようになった",c:"趣味を楽しめるようになり",f:"趣味を楽しめるようになってきました"},{t:"気持ちが前向きになった",c:"気持ちが前向きになり",f:"気持ちが前向きになりました"},{t:"その他",c:"体がラクになり",f:"体が少しずつラクになってきました"}]},
+  {key:"q5", title:"ここが良かった！と感じたところは？", note:"あてはまるものを全部えらんでください",
+   opts:[{t:"膝の痛みの原因をはじめて理解できた",n:"膝の痛みの原因をはじめて理解できたこと"},{t:"自分でできるケアを教えてもらえた",n:"自分でできるケアを教えてもらえたこと"},{t:"説明が丁寧でわかりやすい",n:"説明が丁寧でわかりやすかったこと"},{t:"体の状態をしっかり検査してくれた",n:"体の状態をしっかり検査してもらえたこと"},{t:"痛くない施術で安心",n:"痛みの少ない施術で安心できたこと"},{t:"井上院長の対応が親切・丁寧",n:"井上院長の対応が親切で丁寧だったこと"},{t:"予約が取りやすい",n:"予約が取りやすいこと"},{t:"通いやすい立地",n:"通いやすい場所にあること"},{t:"あきらめていたけど希望が持てた",n:"あきらめていた膝に、希望が持てたこと"}]},
+  {key:"q6", title:"同じように悩んでいる方へ、一言", note:"自由にどうぞ（なくてもOK・音声入力も使えます）", free:true},
+];
+const sel={q1:[],q2:[],qp:[],q3:[],q4:[],q5:[],q6:""}; let step=0;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pickN(arr,n){return shuffle(arr).slice(0,Math.min(n,arr.length));}
+function joinNoun(arr){if(arr.length===0)return"";if(arr.length===1)return arr[0];if(arr.length===2)return arr[0]+"や"+arr[1];return arr.slice(0,-1).join("、")+"、"+arr[arr.length-1];}
+const qArea=document.getElementById("questionArea"); const rArea=document.getElementById("resultArea");
+function progressHTML(){let d="";for(let i=0;i<QUESTIONS.length;i++){d+=`<div class="dot ${i<=step?'on':''}"></div>`;}return `<div class="progress">${d}</div><div class="step-label">${step+1} / ${QUESTIONS.length}</div>`;}
+function render(){
+  const q=QUESTIONS[step]; let html=progressHTML();
+  html+=`<div class="card"><div class="q-title">${q.title}</div>`;
+  if(!q.free){ html+=`<div class="multi-badge"><span class="b-check">✓</span>いくつでも選べます（複数回答OK）</div>`; }
+  html+=`<div class="q-note">${q.note}</div>`;
+  if(q.free){html+=`<textarea id="freeText" placeholder="迷っている方へ、ひとことどうぞ">${sel.q6}</textarea><button class="mic" id="micBtn">🎤 声で入力する</button><div class="mic-hint"><span class="mh-ico">🎤👆</span>上のボタンを押して、お話しください<br>話した声が、そのまま文字になります</div>`;}
+  else{html+=`<div class="opts">`;q.opts.forEach((o,i)=>{const on=sel[q.key].includes(o);html+=`<button class="opt ${on?'sel':''}" data-i="${i}"><span class="check">${on?'✓':''}</span><span>${o.t}</span></button>`;});html+=`</div>`;}
+  html+=`<div class="nav">`;if(step>0)html+=`<button class="btn ghost" id="backBtn">もどる</button>`;
+  const last=step===QUESTIONS.length-1;html+=`<button class="btn primary" id="nextBtn">${last?'口コミ文を作成する':'つぎへ'}</button></div></div>`;
+  qArea.innerHTML=html;
+  if(!q.free){qArea.querySelectorAll(".opt").forEach(btn=>{btn.onclick=()=>{const o=q.opts[+btn.dataset.i];const arr=sel[q.key];const idx=arr.indexOf(o);if(idx>=0)arr.splice(idx,1);else arr.push(o);updateNext();btn.classList.toggle("sel");btn.querySelector(".check").textContent=arr.includes(o)?'✓':'';};});}
+  else{const ta=document.getElementById("freeText");ta.oninput=()=>{sel.q6=ta.value;};setupMic(ta);}
+  if(step>0)document.getElementById("backBtn").onclick=()=>{step--;render();window.scrollTo(0,0);};
+  document.getElementById("nextBtn").onclick=onNext;updateNext();window.scrollTo(0,0);
+}
+function updateNext(){const q=QUESTIONS[step];const btn=document.getElementById("nextBtn");if(!btn)return;btn.disabled=q.free?false:sel[q.key].length===0;}
+function onNext(){if(step<QUESTIONS.length-1){step++;render();}else{generateAndShow();}}
+function setupMic(ta){const btn=document.getElementById("micBtn");const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){btn.style.display="none";return;}let rec=null,recording=false;btn.onclick=()=>{if(recording){rec&&rec.stop();return;}rec=new SR();rec.lang="ja-JP";rec.interimResults=false;rec.continuous=false;rec.onresult=(e)=>{const txt=e.results[0][0].transcript;ta.value=(ta.value?ta.value+" ":"")+txt;sel.q6=ta.value;};rec.onend=()=>{recording=false;btn.classList.remove("rec");btn.textContent="🎤 声で入力する";};rec.onerror=()=>{recording=false;btn.classList.remove("rec");btn.textContent="🎤 声で入力する";};rec.start();recording=true;btn.classList.add("rec");btn.textContent="● 録音中…（押すと止まる）";};}
+const BANNED=/(完治|治る|治ります|治った|必ず治|改善します|改善する|改善され)/g;
+function buildReview(){
+  const rand=a=>a[Math.floor(Math.random()*a.length)];
+  function pick12(arr){const k=(arr.length>=2&&Math.random()<0.45)?2:1;return pickN(arr,k);}
+  function listSoft(a){if(a.length<=1)return a[0]||"";const r=Math.random();if(r<0.45)return a[0]+"や"+a[1];if(r<0.8)return a[0]+"など";return a[0]+"や、"+a[1]+"など";}
+
+  const bui=sel.q1[0]?sel.q1[0].n:"";
+  const woes=listSoft(pick12(sel.q2).map(o=>o.n));
+  let reason; if(bui&&woes)reason=bui+"の"+woes; else if(bui)reason=bui+"の痛み"; else if(woes)reason=woes; else reason="膝の痛み";
+
+  const treat=listSoft(pick12(sel.q3).map(o=>o.n))||"施術";
+
+  const pr=pick12(sel.qp).map(o=>o.n);
+  let prior="";
+  if(pr.length){const pl=pr.length===2?(pr[0]+"、"+pr[1]):pr[0];
+    prior=rand([
+      `これまで${pl}してきましたが、なかなか思うようにいきませんでした。`,
+      `これまで${pl}していましたが、あまり変わらずにいました。`,
+      `あちこちで${pl}してみましたが、なかなかでした。`,
+      `${pl}して、ずっとしのいでいました。`,
+    ]);
+  }
+
+  const ch=pick12(sel.q4);
+  let change=ch.length===2?(ch[0].c+"、"+ch[1].f):(ch[0]?ch[0].f:"少しずつラクになってきました");
+
+  const good=(pickN(sel.q5,1)[0]||{n:"通ってよかったと思えたこと"}).n;
+  const goodEnd=rand([
+    `${good}が、本当に大きかったです。`,
+    `何より、${good}がうれしかったです。`,
+    `${good}には、感謝しています。`,
+    `${good}、それが一番ありがたかったです。`,
+    `私にとっては、${good}が大きかったです。`,
+  ]);
+
+  const open=rand(["もう何年も","ここ数年","長い間","ずっと",""]);
+  const templates=[
+    ()=>`${open}${reason}に悩んでいました。${prior}こちらで${treat}をしてもらい、${change}。${goodEnd}`,
+    ()=>`${change}。${reason}でずっと困っていて、${prior}こちらに通い始めました。${goodEnd}`,
+    ()=>`正直、半信半疑でした。${prior}それでも${treat}を続けるうちに、${change}。${goodEnd}`,
+    ()=>`同じように${reason}で悩んでいる方に伝えたいです。${prior}${treat}で、${change}。${goodEnd}`,
+    ()=>`${reason}がつらくて、${prior}どうしようかと思っていました。こちらで${treat}をしてもらってから、${change}。${goodEnd}`,
+    ()=>`${open}${reason}に悩んでいました。${prior}今は${treat}をしてもらって、${change}。${goodEnd}`,
+  ];
+  let text=templates[Math.floor(Math.random()*templates.length)]();
+
+  // 本人の一言が無いときだけ、ときどき自然な締めを添える
+  const voice0=(sel.q6||"").trim();
+  if(!voice0){ text+=rand(["","","来てよかったです。","もっと早く来ればよかったです。","通ってよかったと思っています。"]); }
+
+  text=text.replace(BANNED,"");
+  let voice=voice0; if(voice){if(!/[。！？!?）)】」』]$/.test(voice))voice+="。"; text+=voice;}
+  return text;
+}
+function generateAndShow(){
+  const text=buildReview();qArea.classList.add("hidden");rArea.classList.remove("hidden");
+  document.getElementById("appTitle").innerHTML="口コミ文ができました";
+  document.getElementById("appSub").innerHTML="気になるところは自由に直してから<br>投稿してくださいね";
+  rArea.innerHTML=`<div class="result-box"><p class="result-lead">こちらの文章でいかがでしょうか。<br>そのままでも、書き換えても大丈夫です。</p><div class="result-text" id="reviewText" contenteditable="true" spellcheck="false">${text}</div><button class="regen" id="regenBtn">↻ 別の文章を作る</button><button class="copy" id="copyBtn">文章をコピーする</button><a class="goto main" id="gotoGoogle" href="${GOOGLE_REVIEW_URL}" target="_blank" rel="noopener">Googleに口コミを投稿する ›</a><a class="goto main hp" id="gotoHp" href="${HOTPEPPER_REVIEW_URL}" target="_blank" rel="noopener">ホットペッパービューティーに投稿する ›</a><div class="goto-note">どちらか一方でも、両方でもOKです</div><div class="steps-after"><b>かんたん3ステップ</b><br>① 上の「文章をコピーする」を押す<br>② 「Google」か「ホットペッパー」のボタンを押す<br>③ 投稿欄を長押しして<b>貼り付け</b> → 投稿</div></div>`;
+  document.getElementById("regenBtn").onclick=()=>{document.getElementById("reviewText").textContent=buildReview();const c=document.getElementById("copyBtn");c.textContent="文章をコピーする";c.classList.remove("done");};
+  document.getElementById("copyBtn").onclick=()=>{const t=document.getElementById("reviewText").innerText;const done=()=>{const c=document.getElementById("copyBtn");c.textContent="✓ コピーしました";c.classList.add("done");};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>fallbackCopy(t,done));}else fallbackCopy(t,done);};
+  window.scrollTo(0,0);
+}
+function fallbackCopy(t,done){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
+/* 簡易コピーガード（同業対策・補助） */
+document.addEventListener("contextmenu",e=>{if(e.target.id!=="reviewText"&&e.target.id!=="freeText")e.preventDefault();});
+document.addEventListener("keydown",e=>{if(e.key==="F12")e.preventDefault();if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="u")e.preventDefault();});
+render();
+</script>
+</body>
+</html>
