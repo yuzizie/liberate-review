@@ -193,57 +193,54 @@ function render(){
 function updateNext(){const q=QUESTIONS[step];const btn=document.getElementById("nextBtn");if(!btn)return;btn.disabled=q.free?false:sel[q.key].length===0;}
 function onNext(){if(step<QUESTIONS.length-1){step++;render();}else{generateAndShow();}}
 function setupMic(ta){const btn=document.getElementById("micBtn");const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){btn.style.display="none";return;}let rec=null,recording=false;btn.onclick=()=>{if(recording){rec&&rec.stop();return;}rec=new SR();rec.lang="ja-JP";rec.interimResults=false;rec.continuous=false;rec.onresult=(e)=>{const txt=e.results[0][0].transcript;ta.value=(ta.value?ta.value+" ":"")+txt;sel.q6=ta.value;};rec.onend=()=>{recording=false;btn.classList.remove("rec");btn.textContent="🎤 声で入力する";};rec.onerror=()=>{recording=false;btn.classList.remove("rec");btn.textContent="🎤 声で入力する";};rec.start();recording=true;btn.classList.add("rec");btn.textContent="● 録音中…（押すと止まる）";};}
+/* ===== 文章生成（2026-11-13 自然化）=====
+   方針：①選んだ答えを「〜こと」で名詞化して並べない ②毎回すべての要素を入れない
+   ③選んでいない事実（年数・半信半疑など）を足さない ④本人の一言を主役にする */
 const BANNED=/(完治|治る|治ります|治った|必ず治|改善します|改善する|改善され)/g;
+const WOE={ "歩くと痛い":["少し歩くのもしんどくて","歩くのがつらくて"], "階段の上り下りがつらい":["階段の上り下りがつらくて","階段がとにかくつらくて"], "立ち上がるときに痛い":["立ち上がるのがつらくて"], "動き始めに痛い":["特に動き始めがつらくて"], "ずっと立っていると痛い":["長く立っているのもつらくて"], "正座ができない":["正座もできなくて"], "膝の曲げ伸ばしで痛む":["曲げ伸ばしもつらくて"], "膝に水がたまる・腫れる":["水がたまって腫れることもあって"], "O脚が気になる":["O脚も気になっていて"], "変形性膝関節症と診断された":["病院では変形性膝関節症と言われて"], "病院で「年のせい」と言われた":["病院では年のせいと言われて"], "他の病院・治療院でよくならなかった":["どこに行ってもなかなか良くならなくて","あちこち行ってもあまり変わらなくて"], "手術を勧められている・避けたい":["手術も勧められていて"], "その他":["ずっと調子が悪くて"] };
+const PRIOR={ "電気をあてていた":"電気をあてたり", "湿布をしていた":"湿布を貼ったり", "痛み止めを飲んでいた":"痛み止めを飲んだり", "注射を打っていた":"注射を打ったり", "ヒアルロン酸注射を打っていた":"ヒアルロン酸の注射を打ったり", "サポーターをつけていた":"サポーターをつけたり", "整形外科に通っていた":"整形外科に通ったり", "整骨院・マッサージに通っていた":"整骨院やマッサージに行ったり", "その他":"いろいろ試したり" };
+const TREAT={ "膝の専門施術（手技）":["施術してもらって"], "膝を伸ばすための施術":["膝を伸ばす施術をしてもらって"], "膝のねじれ・バランスの調整":["膝のねじれを整えてもらって"], "お皿まわりの施術":["お皿のまわりを施術してもらって"], "膝を強くするトレーニング":["膝のトレーニングも教えてもらって"], "痛みの原因の検査・説明":["まず痛みの原因を調べて説明してもらって"], "自分でできるセルフケアの指導":["家でできるケアも教えてもらって"], "歩き方・体の使い方のアドバイス":["歩き方のアドバイスももらって"], "食事・栄養のアドバイス":["食事のアドバイスももらって"], "体質を整える腸活の指導":["腸活の指導も受けて"], "その他":["施術してもらって"] };
+const CHANGE={ "痛みがやわらいだ":["痛みがだいぶやわらいできました","痛みがやわらいできました"], "歩くのがラクになった":["歩くのがラクになりました"], "階段がラクになった":["階段がラクになってきました"], "立ち上がりがラクになった":["立ち上がるのがラクになりました"], "膝の曲げ伸ばしがしやすくなった":["曲げ伸ばしがしやすくなりました"], "正座に近づいた・できるようになった":["正座が少しずつできるようになってきました"], "腫れ・水がひいてきた":["腫れが引いてきました"], "外出や旅行ができるようになった":["出かけるのが楽しくなりました","外出を楽しめるようになりました"], "スポーツ・趣味を楽しめるようになった":["趣味を楽しめるようになってきました"], "気持ちが前向きになった":["気持ちが前向きになりました"], "その他":["体が少しずつラクになってきました"] };
+const GOOD={ "膝の痛みの原因をはじめて理解できた":["なぜ痛いのか、はじめてちゃんと分かりました","痛みの原因をはじめて理解できました"], "自分でできるケアを教えてもらえた":["家でできるケアを教えてもらえるので助かっています"], "説明が丁寧でわかりやすい":["説明が丁寧で分かりやすいです","毎回説明が分かりやすくて納得できます"], "体の状態をしっかり検査してくれた":["体の状態をしっかり見てくれます"], "痛くない施術で安心":["施術は痛くないので安心です"], "井上院長の対応が親切・丁寧":["井上先生がとても親切で話しやすいです","先生が親身に話を聞いてくれます"], "予約が取りやすい":["予約が取りやすいです"], "通いやすい立地":["駅から近くて通いやすいです"], "あきらめていたけど希望が持てた":["あきらめかけていましたが、希望が持てました"] };
 function buildReview(){
   const rand=a=>a[Math.floor(Math.random()*a.length)];
-  function pick12(arr){const k=(arr.length>=2&&Math.random()<0.45)?2:1;return pickN(arr,k);}
-  function listSoft(a){if(a.length<=1)return a[0]||"";const r=Math.random();if(r<0.45)return a[0]+"や"+a[1];if(r<0.8)return a[0]+"など";return a[0]+"や、"+a[1]+"など";}
-
-  const bui=sel.q1[0]?sel.q1[0].n:"";
-  const woes=listSoft(pick12(sel.q2).map(o=>o.n));
-  let reason; if(bui&&woes)reason=bui+"の"+woes; else if(bui)reason=bui+"の痛み"; else if(woes)reason=woes; else reason="膝の痛み";
-
-  const treat=listSoft(pick12(sel.q3).map(o=>o.n))||"施術";
-
-  const pr=pick12(sel.qp).map(o=>o.n);
+  const chance=p=>Math.random()<p;
+  const T=o=>o.t;
+  // 状況（部位＋悩み）… 〜て で終わる節
+  const bui=sel.q1[0]?sel.q1[0].n:"膝";
+  const woes=pickN(sel.q2.map(T),chance(0.15)?2:1).map(t=>rand(WOE[t]||["痛くて"]));
+  const sit=bui+"が痛くて"+(woes.length?"、"+woes.join("、"):"");
+  const sitEnd=rand(["困っていました","悩んでいました"]);
+  // これまでの対処（ときどき入れる）
   let prior="";
-  if(pr.length){const pl=pr.length===2?(pr[0]+"、"+pr[1]):pr[0];
-    prior=rand([
-      `これまで${pl}してきましたが、なかなか思うようにいきませんでした。`,
-      `これまで${pl}していましたが、あまり変わらずにいました。`,
-      `あちこちで${pl}してみましたが、なかなかでした。`,
-      `${pl}して、ずっとしのいでいました。`,
-    ]);
+  const qp=sel.qp.map(T);
+  if(qp.length&&chance(0.6)){
+    const acts=pickN(qp.filter(t=>PRIOR[t]),2).map(t=>PRIOR[t]);
+    if(acts.length){ prior=acts.join("")+rand(["してきましたが、あまり変わりませんでした。","していましたが、思うようにはいきませんでした。","もしましたが、その場しのぎでした。"]); }
+    else if(qp.includes("我慢して様子を見ていた")) prior="ずっと我慢していました。";
+    else prior="どうしたらいいのか分からずにいました。";
   }
-
-  const ch=pick12(sel.q4);
-  let change=ch.length===2?(ch[0].c+"、"+ch[1].f):(ch[0]?ch[0].f:"少しずつラクになってきました");
-
-  const good=(pickN(sel.q5,1)[0]||{n:"通ってよかったと思えたこと"}).n;
-  const goodEnd=rand([
-    `${good}が、本当に大きかったです。`,
-    `何より、${good}がうれしかったです。`,
-    `${good}には、感謝しています。`,
-    `${good}、それが一番ありがたかったです。`,
-    `私にとっては、${good}が大きかったです。`,
-  ]);
-
-  const open=rand(["もう何年も","ここ数年","長い間","ずっと",""]);
-  const templates=[
-    ()=>`${open}${reason}に悩んでいました。${prior}こちらで${treat}をしてもらい、${change}。${goodEnd}`,
-    ()=>`${change}。${reason}でずっと困っていて、${prior}こちらに通い始めました。${goodEnd}`,
-    ()=>`正直、半信半疑でした。${prior}それでも${treat}を続けるうちに、${change}。${goodEnd}`,
-    ()=>`同じように${reason}で悩んでいる方に伝えたいです。${prior}${treat}で、${change}。${goodEnd}`,
-    ()=>`${reason}がつらくて、${prior}どうしようかと思っていました。こちらで${treat}をしてもらってから、${change}。${goodEnd}`,
-    ()=>`${open}${reason}に悩んでいました。${prior}今は${treat}をしてもらって、${change}。${goodEnd}`,
+  // 施術（ときどき入れる）
+  const treat=sel.q3.length&&chance(0.7)? pickN(sel.q3.map(T),1).map(t=>rand(TREAT[t]||["施術してもらって"])).join("、") : "";
+  // 変化（必ず入れる）
+  const chs=pickN(sel.q4.map(T),chance(0.2)?2:1).map(t=>rand(CHANGE[t]||["少しずつラクになってきました"]));
+  let change=chs[0]||"少しずつラクになってきました";
+  if(chs[1]) change+="。"+"それに"+chs[1];
+  const bang=chance(0.25)?"！":"。";
+  // 良かった点（1つ、たまに2つ）
+  const goods=pickN(sel.q5.map(T),chance(0.3)?2:1).map(t=>rand(GOOD[t]||["通ってよかったです"]));
+  const good=goods.length?goods.join("。")+"。":"";
+  const pre=rand(["","今は","おかげで","通ううちに"]);
+  const pats=[
+    ()=>`${sit}${sitEnd}。${prior}${treat?"こちらで"+treat+"、":"こちらに通って、"}${pre}${change}${bang}${good}`,
+    ()=>`${sit}、こちらに通い始めました。${treat?treat+"、":""}${pre}${change}${bang}${good}`,
+    ()=>`${change}${bang}${sit}${sitEnd}。${prior}${good}`,
+    ()=>`${good}${sit}${sitEnd}が、${treat?treat+"、":""}${change}${bang}`,
   ];
-  let text=templates[Math.floor(Math.random()*templates.length)]();
-
-  // 本人の一言が無いときだけ、ときどき自然な締めを添える
+  let text=rand(pats)();
   const voice0=(sel.q6||"").trim();
-  if(!voice0){ text+=rand(["","","来てよかったです。","もっと早く来ればよかったです。","通ってよかったと思っています。"]); }
-
-  text=text.replace(BANNED,"");
+  if(!voice0&&chance(0.4)) text+=rand(["おすすめです。","ありがとうございます。","先生ありがとうございます。"]);
+  text=text.replace(BANNED,"").replace(/。。/g,"。").replace(/！。/g,"！");
   let voice=voice0; if(voice){if(!/[。！？!?）)】」』]$/.test(voice))voice+="。"; text+=voice;}
   return text;
 }
