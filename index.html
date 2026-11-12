@@ -269,7 +269,7 @@ function buildReview(){
     ()=>`${sit}${nayam}。${prior}${meet}${useTreat?"こちらで":""}${body}${good}`,
     ()=>`${sit}${nayam}。${meet||prior}${useTreat?"こちらで":""}${body}${good}`,
     ()=>`${sit}、こちらに通い始めました。${body}${good}`,
-    ()=>`${good}${sit}${nayam}が、${body}`,
+    ()=>`${good}${sit}${nayam}${dur&&/ですが、$/.test(dur)?"。":"が、"}${body}`,
   ];
   let text=rand(pats)();
   const voice0=(sel.q6||"").trim();
