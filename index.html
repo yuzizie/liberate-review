@@ -260,7 +260,7 @@ const GOOD={
  "変化を毎回いっしょに確認してくれる":["次に行ったとき、どれくらい変わったか一緒に確認してくれるので励みになります","変化を毎回いっしょに確かめてくれるのが心強いです"]
 };
 const CLOSE=["おすすめです。","同じように悩んでいる方にすすめたいです。","ありがとうございます。","先生、ありがとうございます。","これからもよろしくお願いします。","通ってよかったです。","思い切って行ってよかったです。"];
-const WATCH=["こわ","施術","ずっと","てきました","になりました","ラク","つらく","しんど","痛くて","もらって","教わ","教えて","分か","行って","伺","予約","通っ","通い","本当に","少しずつ","ようになり","ました！","できる","先生","安心","気持ち","助か","ありがた","納得"];
+const WATCH=["今は","こわ","施術","ずっと","てきました","になりました","ラク","つらく","しんど","痛くて","もらって","教わ","教えて","分か","行って","伺","予約","通っ","通い","本当に","少しずつ","ようになり","ました！","できる","先生","安心","気持ち","助か","ありがた","納得"];
 
 function buildReview(){
   const rand=a=>a[Math.floor(Math.random()*a.length)];
@@ -301,10 +301,10 @@ function buildReview(){
     if(chs[1]) change+="。"+rand(["それに","あと、","",""])+chs[1];
     const dur=DUR[pick1("qd")]&&chance(0.8)? rand(DUR[pick1("qd")]) : "";
     const treat=!dur&&sel.q3.length&&chance(0.6)? rand(TREAT[pickN(sel.q3.map(T),1)[0]]||["施術してもらって"]) : "";
-    const lead=dur||treat&&(rand(["こちらで",""])+treat+"、")||rand(["","","今は","おかげで"]);
+    const lead=dur||treat&&(rand(["こちらで",""])+treat+"、")||(first?"":rand(["","","今は","おかげで"]));
     const bang=chance(0.2)?"！":"。";
     const body=lead+change+bang;
-    const bodyTop=(dur||treat&&(treat+"、")||rand(["","今は"]))+change+bang;
+    const bodyTop=(dur||treat&&(treat+"、")||(first?"":rand(["","今は"])))+change+bang;
     // 良かった点
     const goods=pickN(sel.q5.map(T),chance(0.25)?2:1).map(t=>rand(GOOD[t]||["通ってよかったです"]));
     const good=goods.length?goods.join("。")+"。":"";
